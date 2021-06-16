@@ -1,4 +1,4 @@
-package xdclss.net.xdclsskafka;
+package xdclss.net.xdclasskafka;
 
 import org.apache.kafka.clients.admin.*;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ public class KafkaAdminTest {
     @Test
     public  void delTopicTest() {
         AdminClient adminClient = initAdminClient();
-        DeleteTopicsResult deleteTopicsResult = adminClient.deleteTopics(Arrays.asList("xdclss-sp-topic"));
+        DeleteTopicsResult deleteTopicsResult = adminClient.deleteTopics(Arrays.asList("my-topic"));
         try {
             deleteTopicsResult.all().get();
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class KafkaAdminTest {
         Map<String, NewPartitions> infoMap = new HashMap<>();
         NewPartitions newPartitions = NewPartitions.increaseTo(5);
         AdminClient adminClient = initAdminClient();
-        infoMap.put(TOPIC_NAME, newPartitions);
+        infoMap.put("my-topic", newPartitions);
         CreatePartitionsResult createPartitionsResult = adminClient.createPartitions(infoMap);
         createPartitionsResult.all().get();
     }

@@ -1,4 +1,4 @@
-package xdclss.net.xdclsskafka;
+package xdclss.net.xdclasskafka;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

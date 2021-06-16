@@ -1,9 +1,6 @@
-package xdclss.net.xdclsskafka;
+package xdclss.net.xdclasskafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -85,6 +82,67 @@ public class KafkaProducerTest {
                 e.printStackTrace();
             }
             System.out.println(i+"发送："+ LocalDateTime.now().toString());
+        }
+        producer.close();
+    }
+
+
+    @Test
+    public void testSendWithCallback(){
+        Properties props = getProperties();
+        Producer<String, String> producer = new KafkaProducer<>(props);
+        for (int i = 1; i < 3; i++){
+            producer.send(new ProducerRecord<>("my-topic", "xdclass-key" + i, "xdclass-value" + i), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception == null) {
+                        System.out.println("发送状态："+metadata.toString());
+                    } else {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+            System.out.println(i+"发送："+LocalDateTime.now().toString());
+        }
+        producer.close();
+    }
+
+    @Test
+    public void testSendWithCallbackAndPartition(){
+        Properties props = getProperties();
+        Producer<String, String> producer = new KafkaProducer<>(props);
+        for (int i = 0; i < 5; i++){
+            producer.send(new ProducerRecord<>("my-topic",1, "xdclass-key" + i, "xdclass-value" + i), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception == null) {
+                        System.out.println("发送状态："+metadata.toString());
+                    } else {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+            System.out.println(i+"发送："+LocalDateTime.now().toString());
+        }
+        producer.close();
+    }
+
+    @Test
+    public void testSendWithPartitionStrategy(){
+        Properties props = getProperties();
+        props.put("partitioner.class", "xdclss.net.xdclasskafka.config.XdclassPartition");
+        Producer<String, String> producer = new KafkaProducer<>(props);
+        for (int i = 0; i < 10; i++){
+            Future<RecordMetadata>  future = producer.send(new ProducerRecord<>("my-topic", "cheryl","xdclass-value"+i));
+            try {
+                RecordMetadata recordMetadata = future.get();
+                System.out.println("发送状态："+recordMetadata.toString());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            System.out.println(i+"发送："+LocalDateTime.now().toString());
         }
         producer.close();
     }
