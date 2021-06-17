@@ -12,14 +12,14 @@ import java.util.concurrent.ExecutionException;
  */
 public class KafkaAdminTest {
 
-    private static final String TOPIC_NAME = "xdclss-sp-topic";
+    public static final String TOPIC_NAME = "xdclss-sp-topic-test";
     /**
      * 设置admin 客户端
      * @return
      */
     public static AdminClient initAdminClient(){
         Properties properties = new Properties();
-        properties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,"39.107.75.93:9092");
+        properties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,"39.107.75.93:9092,39.107.75.93:9093,39.107.75.93:9094");
         AdminClient adminClient = AdminClient.create(properties);
         return adminClient;
     }
@@ -29,7 +29,7 @@ public class KafkaAdminTest {
     public  void createTopic() {
         AdminClient adminClient = initAdminClient();
         // 2个分区，1个副本
-        NewTopic newTopic = new NewTopic(TOPIC_NAME, 2 , (short) 1);
+        NewTopic newTopic = new NewTopic(TOPIC_NAME, 6 , (short) 3);
 
         CreateTopicsResult createTopicsResult = adminClient.createTopics(Arrays.asList(newTopic));
         //future等待创建，成功不会有任何报错，如果创建失败和超时会报错。
@@ -60,7 +60,7 @@ public class KafkaAdminTest {
     @Test
     public  void delTopicTest() {
         AdminClient adminClient = initAdminClient();
-        DeleteTopicsResult deleteTopicsResult = adminClient.deleteTopics(Arrays.asList("my-topic"));
+        DeleteTopicsResult deleteTopicsResult = adminClient.deleteTopics(Arrays.asList(TOPIC_NAME));
         try {
             deleteTopicsResult.all().get();
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class KafkaAdminTest {
         Map<String, NewPartitions> infoMap = new HashMap<>();
         NewPartitions newPartitions = NewPartitions.increaseTo(5);
         AdminClient adminClient = initAdminClient();
-        infoMap.put("my-topic", newPartitions);
+        infoMap.put(TOPIC_NAME, newPartitions);
         CreatePartitionsResult createPartitionsResult = adminClient.createPartitions(infoMap);
         createPartitionsResult.all().get();
     }

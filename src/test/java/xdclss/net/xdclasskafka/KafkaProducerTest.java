@@ -16,7 +16,7 @@ public class KafkaProducerTest {
     public static Properties getProperties(){
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", "39.107.75.93:9092");
+        props.put("bootstrap.servers", "39.107.75.93:9092,39.107.75.93:9093,39.107.75.93:9094");
         //props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "112.74.55.160:9092");
         // 当producer向leader发送数据时，可以通过request.required.acks参数来设置数据可靠性的级别,分别是0, 1，all。
         props.put("acks", "all");
@@ -72,7 +72,7 @@ public class KafkaProducerTest {
         Properties props = getProperties();
         Producer<String, String> producer = new KafkaProducer<>(props);
         for (int i = 1; i < 3; i++){
-            Future<RecordMetadata> future = producer.send(new ProducerRecord<>("my-topic", "xdclass-key"+i, "xdclass-value"+i));
+            Future<RecordMetadata> future = producer.send(new ProducerRecord<>(KafkaAdminTest.TOPIC_NAME, "xdclass-key"+i, "xdclass-value"+i));
             try {
                 RecordMetadata recordMetadata = future.get();//不关心是否发送成功，则不需要这行
                 System.out.println("发送状态："+recordMetadata.toString());
@@ -92,7 +92,7 @@ public class KafkaProducerTest {
         Properties props = getProperties();
         Producer<String, String> producer = new KafkaProducer<>(props);
         for (int i = 1; i < 3; i++){
-            producer.send(new ProducerRecord<>("my-topic", "xdclass-key" + i, "xdclass-value" + i), new Callback() {
+            producer.send(new ProducerRecord<>(KafkaAdminTest.TOPIC_NAME, "xdclass-key" + i, "xdclass-value" + i), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
                     if (exception == null) {
@@ -112,7 +112,7 @@ public class KafkaProducerTest {
         Properties props = getProperties();
         Producer<String, String> producer = new KafkaProducer<>(props);
         for (int i = 0; i < 5; i++){
-            producer.send(new ProducerRecord<>("my-topic",1, "xdclass-key" + i, "xdclass-value" + i), new Callback() {
+            producer.send(new ProducerRecord<>(KafkaAdminTest.TOPIC_NAME,1, "xdclass-key" + i, "xdclass-value" + i), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
                     if (exception == null) {
@@ -133,7 +133,7 @@ public class KafkaProducerTest {
         props.put("partitioner.class", "xdclss.net.xdclasskafka.config.XdclassPartition");
         Producer<String, String> producer = new KafkaProducer<>(props);
         for (int i = 0; i < 10; i++){
-            Future<RecordMetadata>  future = producer.send(new ProducerRecord<>("my-topic", "cheryl","xdclass-value"+i));
+            Future<RecordMetadata>  future = producer.send(new ProducerRecord<>(KafkaAdminTest.TOPIC_NAME, "cheryl","xdclass-value"+i));
             try {
                 RecordMetadata recordMetadata = future.get();
                 System.out.println("发送状态："+recordMetadata.toString());
